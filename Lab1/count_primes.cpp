@@ -17,6 +17,7 @@ int is_prime(int num) {
 int main(int argc, char** argv) {
     int rank, size;
     int n;
+    double time_start, time_finish;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -24,18 +25,26 @@ int main(int argc, char** argv) {
 
     // Ввод только на процессе 0
     if (rank == 0) {
-        printf("Введите n: ");
+        printf("Enter n: ");
+        fflush(stdout);
+
         scanf("%d", &n);
     }
 
+    time_start = MPI_Wtime();
+
     // Рассылка значения всем процессам
     MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    //printf("process %d, n=%d, size=%d\n", rank, n, size);
+    //fflush(stdout);
 
     int local_count = 0;
 
     for (int i = rank + 1; i <= n; i += size) {
         if (is_prime(i)) {
             local_count++;
+            //printf("process %d: %d is prime\n", rank, i);
         }
     }
 
@@ -46,7 +55,9 @@ int main(int argc, char** argv) {
 
     // Вывод результата
     if (rank == 0) {
-        printf("Количество простых чисел до %d: %d\n", n, global_count);
+        time_finish = MPI_Wtime();
+        printf("Number of primes from 1 to %d: %d\n", n, global_count);
+        printf("Exec time: %f", time_finish - time_start);
     }
 
     MPI_Finalize();
