@@ -1,5 +1,6 @@
 #include <iostream>
 #include <mpi.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -19,8 +20,12 @@ int main(int argc, char *argv[])
 
     if(myrank == 0)
     {
-        cout << "Number of iterations=";
-        cin >> n;
+        if (argc > 1) {
+            n = atoi(argv[1]);
+        } else {
+            cout << "Number of iterations=";
+            cin >> n;
+        }
     }
 
     MPI_Bcast(&n,1,MPI_INT,0,MPI_COMM_WORLD);

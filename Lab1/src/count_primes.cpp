@@ -1,5 +1,6 @@
 #include <mpi.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // проверка на простоту
 int is_prime(int num) {
@@ -25,10 +26,14 @@ int main(int argc, char** argv) {
 
     // Ввод только на процессе 0
     if (rank == 0) {
-        printf("Enter n: ");
-        fflush(stdout);
+        if (argc > 1) {
+            n = atoi(argv[1]);
+        } else {
+            printf("Enter n: ");
+            fflush(stdout);
 
-        scanf("%d", &n);
+            scanf("%d", &n);
+        }
     }
 
     time_start = MPI_Wtime();
@@ -57,7 +62,7 @@ int main(int argc, char** argv) {
     if (rank == 0) {
         time_finish = MPI_Wtime();
         printf("Number of primes from 1 to %d: %d\n", n, global_count);
-        printf("Exec time: %f", time_finish - time_start);
+        printf("Exec time: %f\n", time_finish - time_start);
     }
 
     MPI_Finalize();
